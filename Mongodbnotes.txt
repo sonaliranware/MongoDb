@@ -1,0 +1,181 @@
+//show dbs;  ---show all databases
+use('mydb'); //---creating your new database
+
+db.products.insertOne({   //creating new table product & inserting one values
+    item:'pen',
+    price:20,
+    quatity:2,
+    type:'stationary',
+    colors:['red','blue'],
+    size:{w:1,h:30,unit:'cm'}
+})
+db.products.find()  //display the product
+
+db.products.insertMany([
+    {   
+    item:'book',
+    price:250,
+    quatity:10,
+    type:'stationary',
+    colors:['brown','blue'],
+    size:{w:1,h:30,unit:'inch'}
+    },
+    {
+        item:'pencil',
+        price:25,
+        quatity:100,
+        type:'stationary',
+        colors:['black','red'],
+        size:{w:5,h:20,unit:'inch'}
+    },
+    {
+        item:'laptop',
+        price:25000,
+        quatity:10,
+        type:'electronics',
+        colors:['white','blue'],
+        size:{w:1,h:30,unit:'cm'}
+    },
+    {
+        item:'mobile',
+        price:234350,
+        quatity:50,
+        type:'electronics',
+        colors:['black','blue','white'],
+        size:{w:1,h:30,unit:'inch'}
+    }
+])
+//select  * from products where item="pen"--dispaly item name pen 
+db.products.find({item:'pen'})
+
+//select * from products where name like 'b%'---dispaly item name start from b
+db.products.find({item:/^b/})
+
+////select * from products where name like '%e'---dispaly item name ends from b
+db.products.find({item:/e$/})
+
+////select * from products where name like '%a%'---dispaly item name conatins from b
+db.products.find({item:/l/})
+
+//select * from products where quantity in(10,50,20)
+db.products.find({
+    quatity:{$in:[25,10,5]}
+})
+
+//select * from products where quantity>20
+db.products.find({
+    quatity:{
+        $gt:20 
+    }
+})
+//select * from products where quantity<20
+db.products.find({
+    quatity:{
+        $lt:20 
+    }
+})
+//select * from products where quantity=20
+db.products.find({
+    quatity:{
+        $eq:20 
+    }
+})
+//select * from products where quantity>=20
+db.products.find({
+    quatity:{
+        $gte:20 //$lte
+    }
+})
+//select * from products where quantity!=20
+db.products.find({
+    quatity:{
+        $ne:20 
+    }
+})
+
+//finding product whose size  w >10
+
+db.products.find({
+    'size.w':{
+        $gt:2
+    }
+})
+//show all the products having color black and white
+db.products.find({
+colors:{
+    $in:['black','white']
+}
+})
+
+//show all products who having price >10000
+db.products.find({
+    price:{
+        $gt:10000
+    }
+}).count()
+
+//show my  all produts count
+db.products.find().count()
+
+//sorting by asc desc   (ase=1,desc=-1)
+//sort all product by price asc order
+db.products.find().sort({
+    price:1
+})
+
+db.products.find().sort({
+    item:-1
+})
+
+/*projections:
+Inclusion--you specify the fields that you want include  
+with the value 1
+Exclusion--you specify the fields that you want exclude
+with value 0
+
+*/
+/*select item,price from products*/
+db.products.find({},{
+    item:1,
+    price:1
+})
+
+db.products.find({},{
+    _id:0,
+    item:1,
+    price:1
+})
+
+//select item,price,quantity ,type from products where price=25
+db.products.find({
+    price:{
+        $gt:10000
+    }},
+    {
+    _id:0,
+    colors:0,
+    size:0
+})
+
+//limit ---shows only top 4 record
+db.products.find().limit(1) 
+
+//how to display after 4 records 
+db.products.find().skip(4)
+
+//after 4 records  only 2 record dispaly
+db.products.find().skip(4).limit(2)
+
+//aggrigate function
+db.products.aggregate([
+    {
+        $group: {
+          _id:'$type',
+          totalprice:{$sum:'$price'},
+          minprice:{$min:'$price'},
+          maxprice:{$max:'$price'},
+          avgprice:{$avg:'$price'},
+          }
+        }
+    
+])
