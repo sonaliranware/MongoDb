@@ -1,0 +1,240 @@
+//check all databases
+show dbs;
+
+//create new database or use exisitng databas
+use("weekendbatch")
+
+//creating new collection 
+db.createCollection("Product")
+
+//inserting data into product
+db.Product.insertOne({
+
+    item:'book',
+    price:1000.67,
+    pages:100,
+    author:'cherry',
+    type:'stationary',
+    colors:['black','red'],
+    size:{w:10,h:30,unit:'cm'}
+})
+
+//display value of collection
+db.Product.find();
+
+
+//inserting  many records into product
+db.Product.insertMany([
+    {
+
+    item:'laptop',
+    price:53000.7,
+    RAM:'8GB',
+    company:'HP',
+    type:'electronics',
+    colors:['black','white','gray'],
+    size:{w:200,h:300,unit:'cm'}
+    },
+    {
+    item:'pen',
+    price:100,
+    
+    company:'cello',
+    type:'stationary',
+    colors:['black','white','gray'],
+    size:{w:5,h:20,unit:'cm'}
+    },
+   {
+
+    item:'mobile',
+    price:53000.7,
+    RAM:'4GB',
+    company:'iphone',
+    type:'electronics',
+    colors:['black','white','gray'],
+    size:{w:50,h:70,unit:'cm'}
+    },
+     {
+
+    item:'pencil',
+    price:50,
+    
+    company:'apsara',
+    type:'stationary',
+    colors:['black','white','gray'],
+    size:{w:20,h:80,unit:'inch'}
+    },
+])
+db.Product.find();
+/*
+working on find query */
+//find out product whose type is stationary
+db.Product.find({type:'stationary'})
+
+db.Product.findOne({type:'stationary'})
+
+//applying relational operation---  >,<,>=,<=,!=
+//lt,gt,lte,gte,eq,ne
+//find all product  whose price >1000
+db.Product.find({
+    price:{
+        $gt:1000
+    }
+})
+//find all product whose price<=100
+db.Product.find({
+    price:{
+        $lte:1000
+    }
+})
+//find all product whose width=5
+db.Product.find({
+    'size.w':{
+        $eq:5
+    }
+})
+
+//find all the product  whose color is red and black,white
+
+db.Product.find({
+    colors:{
+        $in:['red','black','white']
+    }
+})
+
+//find those product whose item starts with p
+db.Product.find({item:/^p/})   //^ indicates --starts with
+
+//find those product whose item ends with p
+db.Product.find({item:/p$/})   //$ indicates --starts with
+
+//find those product whose item contains with p
+db.Product.find({item:/p/})   //--/p/ indicates --starts with
+
+//sorting operations  asending order(1),desending order(-1)
+//sort all product price by asending order
+
+db.Product.find().sort({
+price:1
+})
+
+//sort all product price by asending order
+
+db.Product.find().sort({
+RAM:-1
+})
+
+//working on update query
+//update product item mobile  set company nokia
+db.Product.updateOne(
+    {
+    item:'mobile'
+    },
+  {$set:
+{
+    company:'nokia'
+}}
+) 
+db.Product.find()
+
+////update product item mobile  set company nokia,price=55000
+db.Product.updateOne(
+    {
+    item:'mobile'
+    },
+  {
+    $set:{
+    company:'nokia',
+    price:55000
+}}
+) 
+
+//update product type stationary set company="xyz"
+db.Product.updateMany(
+    {
+    type:'stationary'
+    },
+  {
+    $set:{
+    company:'xyz',
+    
+}}
+)
+db.Product.find()
+
+//working on delete query
+//delete those product whose RAM=4GB
+
+db.Product.deleteOne({
+    "RAM":"4GB"
+})
+
+db.Product.deleteMany({
+    "RAM":"4GB"
+})
+
+db.Product.deleteMany({}) //delete all documents in product
+db.Product.drop() //-------delete collection product
+
+
+//set the type='accesories' for all products
+db.Product.updateMany(
+    {},
+  {
+    $set:{
+   type:'accesories'
+    
+}}
+)
+/*Projection---
+inclusion---it specify the fields that you
+want include with the value 1
+
+exclusion--it specify the fields that you
+want to exclude with the value 0
+*/
+//select price,type,item from product*/
+db.Product.find(
+    {},
+    {
+    price:1,
+    item:1,
+    type:1
+    }
+)
+//not dispaly id
+db.Product.find(
+    {},
+    {
+    _id:0,    
+    price:1,
+    item:1,
+    type:1
+    }
+)
+
+//select item,price,,quantity,type from product
+//where price>10000
+
+db.Product.find(
+    {
+        price:
+        {
+            $gt:10000
+        }
+    },
+    {
+    _id:0,    
+    price:1,
+    item:1,
+    type:1
+    }
+)
+//limit 
+//show only 3 top records
+db.Product.find().limit(3)
+//show  all records after 3
+db.Product.find().skip(3)
+
+//show only 2 records after 1 products
+db.Product.find().skip(1).limit(2)
